@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location</title>
+    <style>
+        body {
+            width: 100vw;
+            height: 100vh;
+            margin-top: 12vw;
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+        }
+
+        #container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2vw;
+        }
+
+        #header {
+            width: 44vw;
+            height: 5vw;
+            border: 1px solid #333;
+            border-radius: 5px;
+            text-align: center;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #form-body {
+            width: 40vw;
+            padding: 2vw 4vw;
+            border: 1px solid #333;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            gap: 2vw;
+            color: white;
+            background-color: #4a4a4a;
+        }
+
+        table {
+            width: 100%;
+        }
+
+        td {
+            padding: 0.5vw;
+        }
+
+        label {
+            font-weight: bold;
+            color: #fff;
+        }
+
+        select {
+            width: 20vw;
+            height: 2.5vw;
+            border-radius: 4px;
+            border: 1px solid #aaa;
+            padding-left: 0.5vw;
+        }
+
+        select:hover {
+            border-color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="header">
+            <h1>Location Form</h1>
+        </div>
+
+        <div id="form-body">
+            <table>
+                <tr>
+                    <td><label for="country">Select Country:</label></td>
+                    <td>
+                        <select name="country" id="country">
+                            <option value="">Select country</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="state">Select State:</label></td>
+                    <td>
+                        <select name="state" id="state">
+                            <option value="">Select state</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="city">Select City:</label></td>
+                    <td>
+                        <select name="city" id="selectcity">
+                            <option value="">Select city</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const baseURL = "http://127.0.0.1:8000";
+
+        window.onload = () => {
+            fetch(`${baseURL}/countries`)
+                .then(res => res.json())
+                .then(data => {
+                    const countrySelect = document.getElementById("country");
+                    data.forEach(country => {
+                        const opt = document.createElement("option");
+                        opt.value = country.id;
+                        opt.textContent = country.name;
+                        countrySelect.appendChild(opt);
+                    });
+                });
+        };
+
+        document.getElementById("country").addEventListener("change", function () {
+            const countryId = this.value;
+            const stateSelect = document.getElementById("state");
+            stateSelect.innerHTML = '<option value="">Select state</option>';
+
+            fetch(`${baseURL}/states/${countryId}`)
+                .then(res => res.json())
+                .then(data => {
+                    data.forEach(state => {
+                        const opt = document.createElement("option");
+                        opt.value = state.id;
+                        opt.textContent = state.name;
+                        stateSelect.appendChild(opt);
+                    });
+                });
+        });
+
+        document.getElementById("state").addEventListener("change", function () {
+            const stateId = this.value;
+            const citySelect = document.getElementById("selectcity");
+            citySelect.innerHTML = '<option value="">Select city</option>';
+
+            fetch(`${baseURL}/cities/${stateId}`)
+                .then(res => res.json())
+                .then(data => {
+                    data.forEach(city => {
+                        const opt = document.createElement("option");
+                        opt.value = city.id;
+                        opt.textContent = city.name;
+                        citySelect.appendChild(opt);
+                    });
+                });
+        });
+    </script>
+</body>
+</html>
